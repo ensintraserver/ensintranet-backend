@@ -1,0 +1,7 @@
+auth resolver에 있는 logout함수 참고하기
+logout함수에서 레디스에 토큰을 저장함(set)
+
+jwt-access.strategy, jwt-refresh.strategy에서 토큰을 불러와서 비교함. 이때 key에 있는 값을 불러와서 비교해야함 (get)
+
+
+main-project파일의 package.json버전에 맞게 다운로드 받기

@@ -1,0 +1,79 @@
+import { InputType, Field, Int } from '@nestjs/graphql';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  IsInt,
+  IsOptional,
+  IsBoolean,
+  Matches,
+} from 'class-validator';
+import { UserRole } from '../entities/user.entity';
+import { CreateUserMajorInput } from 'src/apis/user-major/dto/create-user-major.input';
+
+@InputType()
+export class CreateUserInput {
+  @Field(() => String)
+  @IsString()
+  @Matches(/\d{2}기_/, {
+    message: 'customId must contain the format "00기_" (e.g., "01기_", "02기_")',
+  })
+  customId: string;
+
+  @Field(() => String)
+  @IsString()
+  name: string;
+
+  @Field(() => String)
+  @IsEmail()
+  email: string;
+
+  @Field(() => String)
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  password: string;
+
+  @Field(() => String)
+  @IsString()
+  phone: string;
+
+  @Field(() => Int)
+  @IsInt()
+  generation: number;
+
+  @Field(() => Int)
+  @IsInt()
+  entrance: number;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  linkedin?: string;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @IsBoolean()
+  @IsOptional()
+  noCoffeeChat?: boolean;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @IsBoolean()
+  @IsOptional()
+  abroad?: boolean;
+
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  memo?: string;
+
+  @Field(() => UserRole, { nullable: true, defaultValue: UserRole.MEMBER })
+  @IsOptional()
+  role?: UserRole;
+
+  @Field(() => [CreateUserMajorInput], { nullable: true })
+  @IsOptional()
+  userMajors?: CreateUserMajorInput[];
+}

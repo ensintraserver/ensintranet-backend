@@ -1,0 +1,153 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Industry {
+  id: String!
+  name: String!
+  isCustom: Boolean!
+  careers: [Career!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type PositionCategory {
+  id: String!
+  name: String!
+  isCustom: Boolean!
+  careers: [Career!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Career {
+  id: String!
+  company: String!
+  positionCategory: PositionCategory
+  position: String!
+  startDate: DateTime
+  endDate: DateTime
+  isCurrent: Boolean!
+  adminOnly: Boolean!
+  user: User!
+  industry: Industry
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Major {
+  id: String!
+  name: String!
+  isCustom: Boolean!
+  userMajors: [UserMajor!]!
+}
+
+type UserMajor {
+  userId: String!
+  majorId: String!
+  user: User!
+  major: Major!
+  isPrimary: Boolean!
+}
+
+type User {
+  id: String!
+  customId: String!
+  name: String!
+  generation: Int!
+  phone: String!
+  imageUrl: String
+  email: String!
+  entrance: Int!
+  userMajors: [UserMajor!]
+  linkedin: String
+  noCoffeeChat: Boolean!
+  abroad: Boolean!
+  memo: String
+  role: UserRole!
+  careers: [Career!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime!
+}
+
+"""사용자 등급"""
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+type Query {
+  fetchLoginUser: User!
+  fetchAllUsers: [User!]!
+  fetchUser(userId: String!): User!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(userId: String!, updateUserInput: UpdateUserInput!): User!
+  deleteUser(userId: String!): String!
+  login(email: String!, password: String!): String!
+  restoreAccessToken: String!
+  logout: String!
+}
+
+input CreateUserInput {
+  customId: String!
+  name: String!
+  email: String!
+  password: String!
+  phone: String!
+  generation: Int!
+  entrance: Int!
+  imageUrl: String
+  linkedin: String
+  noCoffeeChat: Boolean = false
+  abroad: Boolean = false
+  memo: String
+  role: UserRole = MEMBER
+  userMajors: [CreateUserMajorInput!]
+}
+
+input CreateUserMajorInput {
+  majorId: String
+  customMajorName: String
+  isPrimary: Boolean = false
+}
+
+input UpdateUserInput {
+  customId: String
+  name: String
+  email: String
+  password: String
+  phone: String
+  generation: Int
+  entrance: Int
+  imageUrl: String
+  linkedin: String
+  noCoffeeChat: Boolean = false
+  abroad: Boolean = false
+  memo: String
+  role: UserRole = MEMBER
+  userMajors: [CreateUserMajorInput!]
+  careers: [CreateCareerInput!]
+}
+
+input CreateCareerInput {
+  company: String!
+  positionCategoryId: String
+  customPositionCategoryName: String
+  position: String!
+  startDate: String
+  endDate: String
+  isCurrent: Boolean = false
+  adminOnly: Boolean = false
+  userId: String!
+  industryId: String
+  customIndustryName: String
+}
