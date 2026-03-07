@@ -1,10 +1,13 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { User } from 'src/apis/users/entities/user.entity';
 
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -28,6 +31,10 @@ export class Board {
   @Field(() => String)
   id: string;
 
+  @Column({ type: 'int', unique: true })
+  @Field(() => Int)
+  number: number;
+
   @Column()
   @Field(() => String)
   title: string;
@@ -46,7 +53,12 @@ export class Board {
 
   @Column({ nullable: true })
   @Field(() =>String, { nullable: true })
-  imageUrl: string; 
+  imageUrl: string;
+
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'userId' })
+  @Field(() => User)
+  user: User;
 
   @CreateDateColumn()
   @Field(() => Date)

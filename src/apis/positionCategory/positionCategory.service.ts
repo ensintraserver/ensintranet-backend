@@ -11,6 +11,36 @@ export class PositionCategoryService {
     private readonly positionCategoryRepository: Repository<PositionCategory>,
   ) {}
 
+  async findAll(): Promise<PositionCategory[]> {
+    return this.positionCategoryRepository.find({
+      order: { id: 'ASC' }, // ID 순서로 정렬
+    });
+  }
+
+  async findMaxNumericId(): Promise<number> {
+    // 모든 PositionCategory 조회 (커스텀/일반 구분 없이)
+    const allPositionCategories = await this.positionCategoryRepository.find();
+
+    if (allPositionCategories.length === 0) {
+      return 0;
+    }
+
+    // ID에서 숫자 부분 추출하여 최대값 찾기
+    let maxNumber = 0;
+    for (const positionCategory of allPositionCategories) {
+      // ID에서 마지막 숫자 부분 추출 (예: "001", "CUSTOM_POS_001", "008" 등)
+      const match = positionCategory.id.match(/(\d+)$/);
+      if (match) {
+        const number = parseInt(match[1], 10);
+        if (number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+
+    return maxNumber;
+  }
+
   async create({
     createPositionCategoryInput,
   }: {

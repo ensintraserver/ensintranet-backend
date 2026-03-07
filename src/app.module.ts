@@ -10,6 +10,7 @@ import { UsersModule } from './apis/users/users.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { AuthModule } from './apis/auth/auth.module';
+import { BoardModule } from './apis/board/board.module';
 import { GqlAuthGuardGlobal } from './apis/auth/guards/gql-auth-global.guard';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health.controller';
@@ -17,12 +18,17 @@ import { HealthController } from './health.controller';
 @Module({
   imports: [
     UsersModule,
+    BoardModule,
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       persistedQueries: false,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
+        // Apollo Studio 비활성화 (개발 환경에서만)
+  introspection: process.env.NODE_ENV === 'development', // introspection은 유지
+  // Playground는 기본적으로 활성화되어 있지만, 추가 설정 가능
+  plugins: [],
       context: ({ req, res }) => {
         // // 디버깅 로그 (GraphQL 요청만)
         // if (req.url === '/graphql' || req.url === '/') {
@@ -100,7 +106,15 @@ import { HealthController } from './health.controller';
           };
         }
 
-        // Upstash는 TLS를 사용하므로 rediss:// 프로토콜 사용
+        // 로컬 Redis (docker-compose) 사용 시
+        if (redisUrl.startsWith('redis://')) {
+          return {
+            store: redisStore as unknown as any,
+            url: redisUrl, // redis://ens-redis:6379 또는 redis://localhost:6379
+          };
+        }
+
+        // Upstash Redis (TLS 사용)인 경우
         return {
           store: redisStore as unknown as any, // 타입 단언
           url: redisUrl, // rediss://default:password@endpoint:port 형식

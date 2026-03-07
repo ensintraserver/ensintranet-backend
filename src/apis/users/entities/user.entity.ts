@@ -50,16 +50,16 @@ export class User {
 
 
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   phone: string;
 
   @Column({ nullable: true })
   @Field(() =>String, { nullable: true })
   imageUrl: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   email: string;
 
   @Column()
@@ -81,6 +81,18 @@ export class User {
   @Column({ default: false })
   @Field(() => Boolean)
   abroad: boolean;
+
+  @Column({ default: false })
+  @Field(() => Boolean)
+  agreeTerms: boolean; // 이용약관 동의
+
+  @Column({ default: false })
+  @Field(() => Boolean)
+  agreePrivacy: boolean; // 개인정보 수집 및 이용 동의
+
+  @Column({ default: false })
+  @Field(() => Boolean)
+  agreeAge: boolean; // 만 14세 이상
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
@@ -107,6 +119,6 @@ export class User {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   deletedAt: Date;
 }

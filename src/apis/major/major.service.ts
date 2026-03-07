@@ -11,6 +11,36 @@ export class MajorService {
     private readonly majorRepository: Repository<Major>,
   ) {}
 
+  async findAll(): Promise<Major[]> {
+    return this.majorRepository.find({
+      order: { id: 'ASC' }, // ID 순서로 정렬
+    });
+  }
+
+  async findMaxNumericId(): Promise<number> {
+    // 모든 Major 조회 (커스텀/일반 구분 없이)
+    const allMajors = await this.majorRepository.find();
+
+    if (allMajors.length === 0) {
+      return 0;
+    }
+
+    // ID에서 숫자 부분 추출하여 최대값 찾기
+    let maxNumber = 0;
+    for (const major of allMajors) {
+      // ID에서 마지막 숫자 부분 추출 (예: "001", "CUSTOM_MAJ_001", "008" 등)
+      const match = major.id.match(/(\d+)$/);
+      if (match) {
+        const number = parseInt(match[1], 10);
+        if (number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+
+    return maxNumber;
+  }
+
   async create({ createMajorInput }: { createMajorInput: CreateMajorInput }): Promise<Major> {
     const { id, name, isCustom } = createMajorInput;
 

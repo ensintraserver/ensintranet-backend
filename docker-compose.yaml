@@ -19,8 +19,7 @@ services:
     ports:
       - 15432:5432 # 3306 → 5432
 
-
-  # my-redis:
-  #   image: redis:latest
-  #   ports:
-  #     - 6379:6379
+  ens-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379

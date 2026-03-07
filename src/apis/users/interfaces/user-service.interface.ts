@@ -18,6 +18,10 @@ export interface IUsersServiceFindOneByEmail {
   email: string;
 }
 
+export interface IUsersServiceFindOneByCustomId {
+  customId: string;
+}
+
 export interface IUsersServiceUpdate {
   userId: string;
   updateUserInput: UpdateUserInput;
@@ -33,4 +37,13 @@ export interface IUsersServiceFindOneById {
 
 export interface IUsersServiceDelete {
   userId: string;
+}
+
+export interface IUsersServiceUpdateBatch {
+  updates: Array<{ userId: string; updateUserInput: UpdateUserInput }>;
+}
+
+export interface IUsersServiceUpdatePasswordByResetToken {
+  userId: string;
+  newPassword: string;
 }

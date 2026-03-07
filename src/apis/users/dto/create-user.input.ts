@@ -24,17 +24,19 @@ export class CreateUserInput {
   @IsString()
   name: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @Field(() => String)
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsString()
-  phone: string;
+  @IsOptional()
+  phone?: string;
 
   @Field(() => Int)
   @IsInt()
@@ -63,6 +65,21 @@ export class CreateUserInput {
   @IsBoolean()
   @IsOptional()
   abroad?: boolean;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @IsBoolean()
+  @IsOptional()
+  agreeTerms?: boolean; // 이용약관 동의
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @IsBoolean()
+  @IsOptional()
+  agreePrivacy?: boolean; // 개인정보 수집 및 이용 동의
+
+  @Field(() => Boolean, { nullable: true, defaultValue: false })
+  @IsBoolean()
+  @IsOptional()
+  agreeAge?: boolean; // 만 14세 이상
 
   @Field(() => String, { nullable: true })
   @IsString()
