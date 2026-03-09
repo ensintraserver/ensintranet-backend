@@ -39,4 +39,5 @@ RUN MAIN_FILE=$(find /myfolder/dist -name "main.js" -type f | head -1) && \
     fi
 
 # package.json의 start:prod 사용 (이미 올바른 경로로 설정되어 있음)
-CMD ["yarn", "start:prod"]
+# CMD ["yarn", "start:prod"]
+CMD ["node", "dist/main"]
