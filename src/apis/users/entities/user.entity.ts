@@ -10,6 +10,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 
 // 사용자 등급 Enum 정의
@@ -31,7 +33,7 @@ export class User {
   @Field(() => String)
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   @Field(() => String)
   customId: string;
 
@@ -121,4 +123,14 @@ export class User {
   @DeleteDateColumn()
   @Field(() => Date, { nullable: true })
   deletedAt: Date;
+
+  // phone 필드에서 숫자만 추출하는 훅
+  @BeforeInsert()
+  @BeforeUpdate()
+  normalizePhone() {
+    if (this.phone) {
+      // 숫자가 아닌 모든 문자 제거
+      this.phone = this.phone.replace(/\D/g, '');
+    }
+  }
 }
