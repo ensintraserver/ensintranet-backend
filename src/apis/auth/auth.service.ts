@@ -1,4 +1,12 @@
-import { Injectable, UnprocessableEntityException, NotFoundException, BadRequestException, Inject, CACHE_MANAGER } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+  CACHE_MANAGER,
+  Logger,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import {
@@ -18,6 +26,8 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -343,8 +353,11 @@ console.log('SMTP_USER:', process.env.SMTP_USER);
         `,
       });
     } catch (error) {
-      // 보안을 위해 에러 로그도 남기지 않고 조용히 처리
-      // 실제 전송 실패 여부와 관계없이 동일한 메시지 반환
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(
+        `비밀번호 재설정 메일 전송 실패 (userId=${user.id})`,
+        err.stack ?? err.message,
+      );
     }
 
     return '비밀번호 재설정 링크가 전송되었습니다.';
@@ -370,6 +383,8 @@ console.log('SMTP_USER:', process.env.SMTP_USER);
     try {
       decoded = jwt.verify(token, process.env.JWT_PASSWORD);
     } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.warn(`비밀번호 재설정 토큰 JWT 검증 실패: ${err.message}`);
       throw new BadRequestException('유효하지 않거나 만료된 토큰입니다.');
     }
 

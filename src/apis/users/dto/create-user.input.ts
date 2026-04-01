@@ -20,6 +20,14 @@ export class CreateUserInput {
   })
   customId: string;
 
+  // 회원가입 STEP에서 입력받는 공통 인증번호
+  // - 필드는 nullable로 두고
+  // - 실제 검증은 서비스(UsersService.create)에서 처리
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  authCode?: string;
+
   @Field(() => String)
   @IsString()
   name: string;

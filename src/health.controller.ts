@@ -1,5 +1,5 @@
 // src/health.controller.ts
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode } from '@nestjs/common';
 
 @Controller()
 export class HealthController {
@@ -12,5 +12,12 @@ export class HealthController {
   @Get('/')
   root() {
     return { ok: true };
+  }
+
+  // Service Worker 파일 요청이 백엔드로 들어오면 204로 빠르게 응답
+  @Get('/sw.js')
+  @HttpCode(204)
+  sw() {
+    return;
   }
 }

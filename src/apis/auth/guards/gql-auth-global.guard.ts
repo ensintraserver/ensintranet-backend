@@ -39,6 +39,12 @@ export class GqlAuthGuardGlobal extends AuthGuard('access') {
       return true;
     }
 
+    // Service Worker 파일 요청은 인증 없이 허용
+    if (url === '/sw.js' || url.startsWith('/sw.js')) {
+      console.log('✅ /sw.js 요청 - 인증 스킵');
+      return true;
+    }
+
     // ✅ GraphQL 경로 예외 처리 (Vercel 프록시로 인해 URL이 변경될 수 있음)
     const isGraphQLPath = url === '/graphql' || url.startsWith('/graphql') || url === '/';
     

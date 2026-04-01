@@ -128,10 +128,12 @@ type Mutation {
   logout: String!
   sendPasswordResetLink(email: String!): String!
   resetPassword(token: String!, newPassword: String!): String!
+  sendHelloSms(phone: String!): String!
 }
 
 input CreateUserInput {
   customId: String!
+  authCode: String
   name: String!
   email: String
   password: String!
@@ -158,6 +160,7 @@ input CreateUserMajorInput {
 
 input UpdateUserInput {
   customId: String
+  authCode: String
   name: String
   email: String
   password: String

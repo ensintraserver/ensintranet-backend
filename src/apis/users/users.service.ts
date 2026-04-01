@@ -70,6 +70,7 @@ export class UsersService {
   async create({ createUserInput }: IUsersServiceCreate): Promise<User> {
     const {
       customId,
+      authCode,
       email,
       password,
       name,
@@ -87,6 +88,16 @@ export class UsersService {
       role,
       userMajors,
     } = createUserInput;
+
+    // 회원가입 인증번호 2차 검증 (프론트는 입력값만 받고 서버에서 비교)
+    const expectedAuthCode = (process.env.SIGNUP_AUTH_CODE ?? '').trim();
+    if (!expectedAuthCode) {
+      throw new BadRequestException('서버 인증 설정이 누락되었습니다.');
+    }
+
+    if (!authCode?.trim() || authCode.trim() !== expectedAuthCode) {
+      throw new BadRequestException('인증번호가 올바르지 않습니다.');
+    }
 
     // 이메일 중복 확인 (email이 있을 때만)
     if (email) {

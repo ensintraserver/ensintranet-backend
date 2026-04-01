@@ -10,7 +10,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000', // 개발 환경
-      'https://guardrail-fawn.vercel.app', // 프로덕션 환경
+      'https://ensintranet.com', // 프로덕션 환경
     ], // 프론트엔드 주소
     credentials: true, // credentials 허용
   });
