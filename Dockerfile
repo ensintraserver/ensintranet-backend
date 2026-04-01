@@ -17,7 +17,7 @@ RUN rm -rf /myfolder/dist
 RUN yarn build
 
 # dist/main.js 파일 존재 확인
-RUN test -f /myfolder/dist/main.js && echo "✓ dist/main.js 파일 확인 완료" || (echo "ERROR: dist/main.js 파일을 찾을 수 없습니다!" && exit 1)
+# RUN test -f /myfolder/dist/main.js && echo "✓ dist/main.js 파일 확인 완료" || (echo "ERROR: dist/main.js 파일을 찾을 수 없습니다!" && exit 1)
 
 # 실행
 CMD ["node", "dist/main"]

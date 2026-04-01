@@ -14,7 +14,7 @@ import { BoardModule } from './apis/board/board.module';
 import { GqlAuthGuardGlobal } from './apis/auth/guards/gql-auth-global.guard';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health.controller';
-import { SmsModule } from './apis/sms/sms.module';
+// import { SmsModule } from './apis/sms/sms.module';
 
 @Module({
   imports: [
@@ -139,7 +139,6 @@ import { SmsModule } from './apis/sms/sms.module';
       },
     }),
     AuthModule,
-    SmsModule,
   ],
   controllers: [HealthController],
   providers: [
