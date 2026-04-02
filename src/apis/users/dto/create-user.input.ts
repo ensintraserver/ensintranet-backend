@@ -50,9 +50,10 @@ export class CreateUserInput {
   @IsInt()
   generation: number;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsInt()
-  entrance: number;
+  @IsOptional()
+  entrance?: number;
 
   @Field(() => String, { nullable: true })
   @IsString()

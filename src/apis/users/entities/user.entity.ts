@@ -54,19 +54,19 @@ export class User {
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  phone: string;
+  phone: string | null;
 
   @Column({ nullable: true })
   @Field(() =>String, { nullable: true })
-  imageUrl: string;
+  imageUrl: string | null;
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  email: string;
+  email: string | null;
 
-  @Column()
-  @Field(() => Int)
-  entrance: number;
+  @Column({ nullable: true })
+  @Field(() => Int, { nullable: true })
+  entrance: number | null;
 
   @OneToMany(() => UserMajor, (userMajor) => userMajor.user)
   @Field(() => [UserMajor], { nullable: true }) // 문법 수정: 대괄호 위치 변경
@@ -74,7 +74,7 @@ export class User {
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  linkedin: string;
+  linkedin: string | null;
 
   @Column({ default: false })
   @Field(() => Boolean)
@@ -98,7 +98,7 @@ export class User {
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  memo: string; // 회원목록에서 메모 / 운영진 참고사항
+  memo: string | null; // 회원목록에서 메모 / 운영진 참고사항
 
   @Column({
     type: 'enum',
