@@ -25,13 +25,21 @@ export class GqlAuthGuardGlobal extends AuthGuard('access') {
     const url = req?.url ?? req?.originalUrl ?? '';
     const originalUrl = req?.originalUrl ?? '';
     const method = req?.method ?? '';
+    const hasAuthorization = req?.headers?.authorization ? 'Y' : 'N';
+    const hasCookie = req?.headers?.cookie ? 'Y' : 'N';
+
+    // 루트 경로 헬스체크는 한 줄 로그만 남기고 종료
+    if (url === '/' && (method === 'GET' || method === 'HEAD')) {
+      console.log(`[health-check] ${method} ${url} auth=${hasAuthorization} cookie=${hasCookie} - 인증 스킵`);
+      return true;
+    }
 
     console.log('===== Guard 검증 시작 =====');
     console.log('요청 URL:', url);
     console.log('원본 URL:', originalUrl);
     console.log('요청 Method:', method);
-    console.log('Authorization 헤더:', req.headers?.authorization ? '존재' : '없음');
-    console.log('쿠키:', req.headers?.cookie ? '존재' : '없음');
+    console.log('Authorization 헤더:', hasAuthorization === 'Y' ? '존재' : '없음');
+    console.log('쿠키:', hasCookie === 'Y' ? '존재' : '없음');
 
     // ✅ Render Health Check 예외 처리
     if (url === '/healthz' || url.startsWith('/healthz')) {
@@ -56,12 +64,6 @@ export class GqlAuthGuardGlobal extends AuthGuard('access') {
       }
       // POST 요청은 인증 필요 (아래로 진행)
       console.log('🔒 GraphQL POST 요청 - 인증 필요');
-    }
-
-    // ✅ 루트 경로 GET/HEAD 요청 예외 처리 (Render 헬스 체크)
-    if (url === '/' && (method === 'GET' || method === 'HEAD')) {
-      console.log('✅ 루트 경로 GET/HEAD 요청 - 인증 스킵');
-      return true;
     }
 
     // 기존 Public 데코레이터 로직 유지
