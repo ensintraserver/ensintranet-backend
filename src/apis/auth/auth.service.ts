@@ -20,18 +20,18 @@ import {
   // IAuthServiceSetRefreshToken,
 } from './interfaces/auth-service.interfaces';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer';
 import { Cache } from 'cache-manager';
 import * as jwt from 'jsonwebtoken';
+import { Resend } from 'resend';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private readonly resend = new Resend(process.env.RESEND_API_KEY);
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-    private readonly mailerService: MailerService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
@@ -337,7 +337,7 @@ export class AuthService {
     await this.cacheManager.set(tokenKey, user.id, { ttl: 3600 }); // 1시간 = 3600초
 
     // 4. 비밀번호 재설정 링크 생성
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/+$/, '');
     const resetLink = `${frontendUrl}/resetPassword?token=${resetToken}`;
 
     // 테스트용: 토큰 콘솔 출력
@@ -346,14 +346,39 @@ export class AuthService {
     console.log('재설정 링크:', resetLink);
     console.log('==========================================');
 
-// 이메일 전송 전에 로그 추가
-console.log('발신자 이메일:', process.env.SMTP_FROM_EMAIL);
-console.log('SMTP_USER:', process.env.SMTP_USER);
+    // 이메일 전송 전에 로그 추가
+    console.log('발신자 이메일:', process.env.RESEND_FROM_EMAIL);
+    console.log('RESEND_API_KEY 설정 여부:', Boolean(process.env.RESEND_API_KEY));
 
-    // 5. 이메일 전송
+    // 5. 이메일 전송 (Resend)
     try {
-      await this.mailerService.sendMail({
+      const fromName = process.env.RESEND_FROM_NAME || 'ENS Intranet';
+      const rawFromEmail = process.env.RESEND_FROM_EMAIL;
+      const fromEmail = rawFromEmail?.endsWith('@mail.ensintranet.com')
+        ? rawFromEmail.replace('@mail.ensintranet.com', '@ensintranet.com')
+        : rawFromEmail;
+      const replyTo = process.env.RESEND_REPLY_TO || fromEmail || undefined;
+
+      if (rawFromEmail !== fromEmail) {
+        this.logger.warn(
+          `RESEND_FROM_EMAIL을 보정했습니다: ${rawFromEmail} -> ${fromEmail}`,
+        );
+      }
+
+      if (!process.env.RESEND_API_KEY) {
+        this.logger.error('RESEND_API_KEY가 설정되지 않았습니다.');
+        return '비밀번호 재설정 링크가 전송되었습니다.';
+      }
+
+      if (!fromEmail) {
+        this.logger.error('RESEND_FROM_EMAIL이 설정되지 않았습니다.');
+        return '비밀번호 재설정 링크가 전송되었습니다.';
+      }
+
+      const { error } = await this.resend.emails.send({
+        from: `${fromName} <${fromEmail}>`,
         to: user.email,
+        replyTo: replyTo ? [replyTo] : undefined,
         subject: '비밀번호 재설정 요청',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -368,6 +393,13 @@ console.log('SMTP_USER:', process.env.SMTP_USER);
           </div>
         `,
       });
+
+      if (error) {
+        this.logger.error(
+          `Resend 메일 전송 실패 (userId=${user.id})`,
+          JSON.stringify(error),
+        );
+      }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       this.logger.error(
