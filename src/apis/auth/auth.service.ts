@@ -42,15 +42,31 @@ export class AuthService {
     keepLoggedIn = false,
   }: // context,
   IAuthServiceLogin): Promise<string> {
+    const isDev = process.env.NODE_ENV !== 'production';
+
     // 1. customId로 유저를 DB에서 찾기
     const user = await this.usersService.findOneByCustomId({ customId });
 
     // 2. 일치하는 유저가 없으면?! 에러 던지기!!!
-    if (!user) throw new UnprocessableEntityException('아이디 또는 비밀번호가 틀렸습니다');
+    if (!user) {
+      if (isDev) {
+        this.logger.warn(`[login] customId not found: ${customId}`);
+      }
+      throw new UnprocessableEntityException(
+        '아이디 혹은 비밀번호가 틀렸습니다. 아이디를 확인해 주세요.',
+      );
+    }
 
     // 3. 일치하는 유저가 있지만, 비밀번호가 틀렸다면?!
     const isAuth = await bcrypt.compare(password, user.password);
-    if (!isAuth) throw new UnprocessableEntityException('아이디 또는 비밀번호가 틀렸습니다');
+    if (!isAuth) {
+      if (isDev) {
+        this.logger.warn(`[login] wrong password for customId: ${customId}`);
+      }
+      throw new UnprocessableEntityException(
+        '아이디 혹은 비밀번호가 틀렸습니다. 비밀번호를 확인해 주세요.',
+      );
+    }
 
     // 4. refreshToken(=JWT)을 만들어서 브라우저 쿠키에 저장해서 보내주기
     this.setRefreshToken({ user, context, keepLoggedIn });
