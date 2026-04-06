@@ -374,6 +374,22 @@ export class UsersService {
       if (!currentPassword) {
         throw new BadRequestException('기존 비밀번호를 입력해주세요.');
       }
+
+      const hasLowerCase = /[a-z]/.test(password);
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      const hasSpecialChar = /[@$!%*?&]/.test(password);
+      if (
+        password.length < 8 ||
+        !hasLowerCase ||
+        !hasUpperCase ||
+        !hasNumber ||
+        !hasSpecialChar
+      ) {
+        throw new BadRequestException(
+          '8자리 이상의 대소문자, 숫자, 특수문자를 사용해 주세요.',
+        );
+      }
       
       // 기존 비밀번호 검증
       const isPasswordValid = await bcrypt.compare(
