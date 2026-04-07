@@ -53,7 +53,7 @@ export class AuthService {
         this.logger.warn(`[login] customId not found: ${customId}`);
       }
       throw new UnprocessableEntityException(
-        '아이디 혹은 비밀번호가 틀렸습니다. 아이디를 확인해 주세요.',
+        '아이디 혹은 비밀번호가 틀렸습니다.',
       );
     }
 
@@ -64,7 +64,7 @@ export class AuthService {
         this.logger.warn(`[login] wrong password for customId: ${customId}`);
       }
       throw new UnprocessableEntityException(
-        '아이디 혹은 비밀번호가 틀렸습니다. 비밀번호를 확인해 주세요.',
+        '아이디 혹은 비밀번호가 틀렸습니다.',
       );
     }
 
