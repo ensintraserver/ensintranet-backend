@@ -9,7 +9,7 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
-import { UserRole } from '../entities/user.entity';
+import { UserExecutiveRole, UserRole } from '../entities/user.entity';
 import { CreateUserMajorInput } from 'src/apis/user-major/dto/create-user-major.input';
 import { CreateCareerInput } from 'src/apis/career/dto/create-career.input';
 
@@ -87,6 +87,10 @@ export class UpdateUserInput {
   @Field(() => UserRole, { nullable: true })
   @IsOptional()
   role?: UserRole;
+
+  @Field(() => UserExecutiveRole, { nullable: true })
+  @IsOptional()
+  executiveRole?: UserExecutiveRole;
 
   @Field(() => [CreateUserMajorInput], { nullable: true })
   @IsOptional()

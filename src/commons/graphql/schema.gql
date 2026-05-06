@@ -73,6 +73,7 @@ type User {
   agreeAge: Boolean!
   memo: String
   role: UserRole!
+  executiveRole: UserExecutiveRole
   careers: [Career!]
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -83,6 +84,12 @@ type User {
 enum UserRole {
   MEMBER
   ADMIN
+}
+
+"""운영진 상세 직책"""
+enum UserExecutiveRole {
+  PRESIDENT
+  VICE_PRESIDENT
 }
 
 type Board {
@@ -148,6 +155,7 @@ input CreateUserInput {
   agreeAge: Boolean = false
   memo: String
   role: UserRole = MEMBER
+  executiveRole: UserExecutiveRole
   userMajors: [CreateUserMajorInput!]
 }
 
@@ -159,24 +167,21 @@ input CreateUserMajorInput {
 
 input UpdateUserInput {
   customId: String
-  authCode: String
   name: String
   email: String
   password: String
+  currentPassword: String
   phone: String
   generation: Int
   entrance: Int
   imageUrl: String
   linkedin: String
-  noCoffeeChat: Boolean = false
-  abroad: Boolean = false
-  agreeTerms: Boolean = false
-  agreePrivacy: Boolean = false
-  agreeAge: Boolean = false
+  noCoffeeChat: Boolean
+  abroad: Boolean
   memo: String
-  role: UserRole = MEMBER
+  role: UserRole
+  executiveRole: UserExecutiveRole
   userMajors: [CreateUserMajorInput!]
-  currentPassword: String
   careers: [CreateCareerInput!]
 }
 

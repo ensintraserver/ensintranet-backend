@@ -67,6 +67,30 @@ export class UsersService {
     });
   }
 
+  /** 조회자 역할만 확인 (경력 등 관계 로드 없음) */
+  async getRoleByUserId(id: string): Promise<UserRole | null> {
+    const row = await this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'role'],
+    });
+    return row?.role ?? null;
+  }
+
+  /**
+   * adminOnly 경력은 해당 유저 본인·ADMIN에게만 노출 (그 외 조회에서는 제외)
+   */
+  filterUserCareersForViewer(user: User, viewerId: string, viewerIsAdmin: boolean): User {
+    if (viewerIsAdmin || user.id === viewerId) {
+      return user;
+    }
+    const careers = user.careers?.filter((c) => !c.adminOnly) ?? [];
+    return { ...user, careers } as User;
+  }
+
+  filterUsersCareersForViewer(users: User[], viewerId: string, viewerIsAdmin: boolean): User[] {
+    return users.map((u) => this.filterUserCareersForViewer(u, viewerId, viewerIsAdmin));
+  }
+
   async create({ createUserInput }: IUsersServiceCreate): Promise<User> {
     const {
       customId,
@@ -86,6 +110,7 @@ export class UsersService {
       agreeAge,
       memo,
       role,
+      executiveRole,
       userMajors,
     } = createUserInput;
 
@@ -128,6 +153,7 @@ export class UsersService {
       agreeAge: agreeAge ?? false,
       memo,
       role: role ?? UserRole.MEMBER,
+      executiveRole: executiveRole ?? null,
     });
 
     // UserMajor 저장 (있는 경우)
@@ -357,6 +383,7 @@ export class UsersService {
       abroad,
       memo,
       role,
+      executiveRole,
       userMajors,
       careers,
     } = updateUserInput;
@@ -420,6 +447,7 @@ export class UsersService {
       ...(noCoffeeChat !== undefined && { noCoffeeChat }),
       ...(abroad !== undefined && { abroad }),
       ...(role !== undefined && { role }),
+      ...(executiveRole !== undefined && { executiveRole }),
       ...(hashedPassword && { password: hashedPassword }),
       ...(imageUrl !== undefined && { imageUrl }),
       ...(linkedin !== undefined && { linkedin }),
@@ -619,6 +647,7 @@ export class UsersService {
           abroad,
           memo,
           role,
+          executiveRole,
           userMajors,
           careers,
         } = updateUserInput;
@@ -664,6 +693,7 @@ export class UsersService {
           ...(noCoffeeChat !== undefined && { noCoffeeChat }),
           ...(abroad !== undefined && { abroad }),
           ...(role !== undefined && { role }),
+          ...(executiveRole !== undefined && { executiveRole }),
           ...(hashedPassword && { password: hashedPassword }),
           ...(imageUrl !== undefined && { imageUrl }),
           ...(linkedin !== undefined && { linkedin }),

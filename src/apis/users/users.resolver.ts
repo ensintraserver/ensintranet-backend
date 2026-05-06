@@ -1,7 +1,7 @@
 // users.resolver.ts
 
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
@@ -25,17 +25,25 @@ export class UsersResolver {
   }
 
   @Query(() => [User])
-  async fetchAllUsers(): Promise<User[]> {
-    return this.usersService.findAll({});
+  async fetchAllUsers(@CurrentUser() currentUser: IAuthUser): Promise<User[]> {
+    const role = await this.usersService.getRoleByUserId(currentUser.id);
+    const viewerIsAdmin = role === UserRole.ADMIN;
+    const users = await this.usersService.findAll({});
+    return this.usersService.filterUsersCareersForViewer(users, currentUser.id, viewerIsAdmin);
   }
 
   @Query(() => User)
-  async fetchUser(@Args('userId') userId: string): Promise<User> {
+  async fetchUser(
+    @Args('userId') userId: string,
+    @CurrentUser() currentUser: IAuthUser,
+  ): Promise<User> {
+    const role = await this.usersService.getRoleByUserId(currentUser.id);
+    const viewerIsAdmin = role === UserRole.ADMIN;
     const user = await this.usersService.findOneById({ id: userId });
     if (!user) {
       throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
     }
-    return user;
+    return this.usersService.filterUserCareersForViewer(user, currentUser.id, viewerIsAdmin);
   }
 
   @Public()

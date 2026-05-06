@@ -20,10 +20,20 @@ export enum UserRole {
   ADMIN = 'ADMIN',         // 운영진
 }
 
+export enum UserExecutiveRole {
+  PRESIDENT = 'PRESIDENT', // 학회장
+  VICE_PRESIDENT = 'VICE_PRESIDENT', // 부학회장
+}
+
 // GraphQL에 Enum 등록
 registerEnumType(UserRole, {
   name: 'UserRole',
   description: '사용자 등급',
+});
+
+registerEnumType(UserExecutiveRole, {
+  name: 'UserExecutiveRole',
+  description: '운영진 상세 직책',
 });
 
 @Entity()
@@ -107,6 +117,14 @@ export class User {
   })
   @Field(() => UserRole)
   role: UserRole; // 학회원, 운영진
+
+  @Column({
+    type: 'enum',
+    enum: UserExecutiveRole,
+    nullable: true,
+  })
+  @Field(() => UserExecutiveRole, { nullable: true })
+  executiveRole: UserExecutiveRole | null; // 운영진 상세 직책
 
   @OneToMany(() => Career, (career) => career.user)
   @Field(() => [Career], { nullable: true }) // nullable 추가 (선택사항)
