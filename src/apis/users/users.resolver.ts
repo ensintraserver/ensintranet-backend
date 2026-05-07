@@ -29,7 +29,9 @@ export class UsersResolver {
     const role = await this.usersService.getRoleByUserId(currentUser.id);
     const viewerIsAdmin = role === UserRole.ADMIN;
     const users = await this.usersService.findAll({});
-    return this.usersService.filterUsersCareersForViewer(users, currentUser.id, viewerIsAdmin);
+    return this.usersService
+      .filterUsersCareersForViewer(users, currentUser.id, viewerIsAdmin)
+      .filter((user) => user.name !== '관리자');
   }
 
   @Query(() => User)
