@@ -30,7 +30,7 @@ export class UsersResolver {
     const viewerIsAdmin = role === UserRole.ADMIN;
     const users = await this.usersService.findAll({});
     return this.usersService
-      .filterUsersCareersForViewer(users, currentUser.id, viewerIsAdmin)
+      .filterUsersForViewer(users, currentUser.id, viewerIsAdmin)
       .filter((user) => user.name !== '관리자');
   }
 
@@ -45,7 +45,7 @@ export class UsersResolver {
     if (!user) {
       throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
     }
-    return this.usersService.filterUserCareersForViewer(user, currentUser.id, viewerIsAdmin);
+    return this.usersService.filterUserForViewer(user, currentUser.id, viewerIsAdmin);
   }
 
   @Public()

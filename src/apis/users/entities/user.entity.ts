@@ -74,6 +74,14 @@ export class User {
   @Field(() => String, { nullable: true })
   email: string | null;
 
+  @Column({ default: false })
+  @Field(() => Boolean)
+  phoneAdminOnly: boolean;
+
+  @Column({ default: false })
+  @Field(() => Boolean)
+  emailAdminOnly: boolean;
+
   @Column({ nullable: true })
   @Field(() => Int, { nullable: true })
   entrance: number | null;

@@ -77,18 +77,29 @@ export class UsersService {
   }
 
   /**
-   * adminOnly 경력은 해당 유저 본인·ADMIN에게만 노출 (그 외 조회에서는 제외)
+   * phoneAdminOnly / emailAdminOnly / adminOnly 경력은 해당 유저 본인·ADMIN에게만 노출
    */
-  filterUserCareersForViewer(user: User, viewerId: string, viewerIsAdmin: boolean): User {
+  filterUserForViewer(user: User, viewerId: string, viewerIsAdmin: boolean): User {
     if (viewerIsAdmin || user.id === viewerId) {
       return user;
     }
-    const careers = user.careers?.filter((c) => !c.adminOnly) ?? [];
-    return { ...user, careers } as User;
+
+    const filtered = { ...user } as User;
+
+    if (filtered.phoneAdminOnly) {
+      filtered.phone = null;
+    }
+    if (filtered.emailAdminOnly) {
+      filtered.email = null;
+    }
+
+    filtered.careers = filtered.careers?.filter((c) => !c.adminOnly) ?? [];
+
+    return filtered;
   }
 
-  filterUsersCareersForViewer(users: User[], viewerId: string, viewerIsAdmin: boolean): User[] {
-    return users.map((u) => this.filterUserCareersForViewer(u, viewerId, viewerIsAdmin));
+  filterUsersForViewer(users: User[], viewerId: string, viewerIsAdmin: boolean): User[] {
+    return users.map((u) => this.filterUserForViewer(u, viewerId, viewerIsAdmin));
   }
 
   async create({ createUserInput }: IUsersServiceCreate): Promise<User> {
@@ -384,6 +395,8 @@ export class UsersService {
       memo,
       role,
       executiveRole,
+      phoneAdminOnly,
+      emailAdminOnly,
       userMajors,
       careers,
     } = updateUserInput;
@@ -446,6 +459,8 @@ export class UsersService {
       ...(entrance !== undefined && { entrance }),
       ...(noCoffeeChat !== undefined && { noCoffeeChat }),
       ...(abroad !== undefined && { abroad }),
+      ...(phoneAdminOnly !== undefined && { phoneAdminOnly }),
+      ...(emailAdminOnly !== undefined && { emailAdminOnly }),
       ...(role !== undefined && { role }),
       ...(executiveRole !== undefined && { executiveRole }),
       ...(hashedPassword && { password: hashedPassword }),
@@ -648,6 +663,8 @@ export class UsersService {
           memo,
           role,
           executiveRole,
+          phoneAdminOnly,
+          emailAdminOnly,
           userMajors,
           careers,
         } = updateUserInput;
@@ -692,6 +709,8 @@ export class UsersService {
           ...(entrance !== undefined && { entrance }),
           ...(noCoffeeChat !== undefined && { noCoffeeChat }),
           ...(abroad !== undefined && { abroad }),
+          ...(phoneAdminOnly !== undefined && { phoneAdminOnly }),
+          ...(emailAdminOnly !== undefined && { emailAdminOnly }),
           ...(role !== undefined && { role }),
           ...(executiveRole !== undefined && { executiveRole }),
           ...(hashedPassword && { password: hashedPassword }),

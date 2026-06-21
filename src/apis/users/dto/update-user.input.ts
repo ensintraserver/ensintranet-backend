@@ -48,6 +48,16 @@ export class UpdateUserInput {
   @IsOptional()
   phone?: string;
 
+  @Field(() => Boolean, { nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  phoneAdminOnly?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  emailAdminOnly?: boolean;
+
   @Field(() => Int, { nullable: true })
   @IsInt()
   @IsOptional()
