@@ -109,6 +109,7 @@ type Board {
 enum BoardCategory {
   NOTICE
   RECRUITMENT
+  INFO_SHARE
   ETC
 }
 
@@ -182,8 +183,6 @@ input UpdateUserInput {
   linkedin: String
   noCoffeeChat: Boolean
   abroad: Boolean
-  phoneAdminOnly: Boolean
-  emailAdminOnly: Boolean
   memo: String
   role: UserRole
   executiveRole: UserExecutiveRole

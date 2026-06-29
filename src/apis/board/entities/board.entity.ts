@@ -16,6 +16,7 @@ import {
 export enum BoardCategory {
     NOTICE = 'NOTICE',           // 공지
     RECRUITMENT = 'RECRUITMENT', // 채용공고
+    INFO_SHARE = 'INFO_SHARE',   // 정보 공유
     ETC = 'ETC',                 // 기타
   }
 
